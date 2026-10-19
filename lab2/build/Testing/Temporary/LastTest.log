@@ -1,0 +1,100 @@
+Start testing: Oct 19 13:35 MSK
+----------------------------------------------------------
+1/1 Testing: lab02Tests
+1/1 Test: lab02Tests
+Command: "/home/vagrant/shara/oop_labs/lab2/build/tests"
+Directory: /home/vagrant/shara/oop_labs/lab2/build
+"lab02Tests" start time: Oct 19 13:35 MSK
+Output:
+----------------------------------------------------------
+Running main() from /home/vagrant/shara/oop_labs/lab2/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 35 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 30 tests from PolynomialTest
+[ RUN      ] PolynomialTest.DefaultIsZero
+[       OK ] PolynomialTest.DefaultIsZero (0 ms)
+[ RUN      ] PolynomialTest.ConstructCommon
+[       OK ] PolynomialTest.ConstructCommon (0 ms)
+[ RUN      ] PolynomialTest.ConstructConstant
+[       OK ] PolynomialTest.ConstructConstant (0 ms)
+[ RUN      ] PolynomialTest.ConstructTrailingZeros
+[       OK ] PolynomialTest.ConstructTrailingZeros (0 ms)
+[ RUN      ] PolynomialTest.ConstructAllZeros
+[       OK ] PolynomialTest.ConstructAllZeros (0 ms)
+[ RUN      ] PolynomialTest.CopyIsDeep
+[       OK ] PolynomialTest.CopyIsDeep (0 ms)
+[ RUN      ] PolynomialTest.CopyZero
+[       OK ] PolynomialTest.CopyZero (0 ms)
+[ RUN      ] PolynomialTest.MoveCommon
+[       OK ] PolynomialTest.MoveCommon (0 ms)
+[ RUN      ] PolynomialTest.AssignCopy
+[       OK ] PolynomialTest.AssignCopy (0 ms)
+[ RUN      ] PolynomialTest.AssignMove
+[       OK ] PolynomialTest.AssignMove (0 ms)
+[ RUN      ] PolynomialTest.AssignSelf
+[       OK ] PolynomialTest.AssignSelf (0 ms)
+[ RUN      ] PolynomialTest.AddCommon
+[       OK ] PolynomialTest.AddCommon (0 ms)
+[ RUN      ] PolynomialTest.AddToZero
+[       OK ] PolynomialTest.AddToZero (0 ms)
+[ RUN      ] PolynomialTest.AddZero
+[       OK ] PolynomialTest.AddZero (0 ms)
+[ RUN      ] PolynomialTest.AddCancelLeading
+[       OK ] PolynomialTest.AddCancelLeading (0 ms)
+[ RUN      ] PolynomialTest.AddCancelAll
+[       OK ] PolynomialTest.AddCancelAll (0 ms)
+[ RUN      ] PolynomialTest.AddSelf
+[       OK ] PolynomialTest.AddSelf (0 ms)
+[ RUN      ] PolynomialTest.MulCommon
+[       OK ] PolynomialTest.MulCommon (0 ms)
+[ RUN      ] PolynomialTest.MulByZero
+[       OK ] PolynomialTest.MulByZero (0 ms)
+[ RUN      ] PolynomialTest.MulZero
+[       OK ] PolynomialTest.MulZero (0 ms)
+[ RUN      ] PolynomialTest.MulSelf
+[       OK ] PolynomialTest.MulSelf (0 ms)
+[ RUN      ] PolynomialTest.EvaluateCommon
+[       OK ] PolynomialTest.EvaluateCommon (0 ms)
+[ RUN      ] PolynomialTest.EvaluateAtZero
+[       OK ] PolynomialTest.EvaluateAtZero (0 ms)
+[ RUN      ] PolynomialTest.EvaluateZero
+[       OK ] PolynomialTest.EvaluateZero (0 ms)
+[ RUN      ] PolynomialTest.PrintNegative
+[       OK ] PolynomialTest.PrintNegative (0 ms)
+[ RUN      ] PolynomialTest.PrintFractional
+[       OK ] PolynomialTest.PrintFractional (0 ms)
+[ RUN      ] PolynomialTest.PrintOperator
+[       OK ] PolynomialTest.PrintOperator (0 ms)
+[ RUN      ] PolynomialTest.FindRootCommon
+[       OK ] PolynomialTest.FindRootCommon (0 ms)
+[ RUN      ] PolynomialTest.FindRootReversedBounds
+[       OK ] PolynomialTest.FindRootReversedBounds (0 ms)
+[ RUN      ] PolynomialTest.FindRootAtBound
+[       OK ] PolynomialTest.FindRootAtBound (0 ms)
+[----------] 30 tests from PolynomialTest (4 ms total)
+
+[----------] 5 tests from PolynomialTest_Fail
+[ RUN      ] PolynomialTest_Fail.ConstructNull
+[       OK ] PolynomialTest_Fail.ConstructNull (0 ms)
+[ RUN      ] PolynomialTest_Fail.ConstructNegativeDegree
+[       OK ] PolynomialTest_Fail.ConstructNegativeDegree (0 ms)
+[ RUN      ] PolynomialTest_Fail.FindRootSameSigns
+[       OK ] PolynomialTest_Fail.FindRootSameSigns (1 ms)
+[ RUN      ] PolynomialTest_Fail.FindRootConstant
+[       OK ] PolynomialTest_Fail.FindRootConstant (0 ms)
+[ RUN      ] PolynomialTest_Fail.FindRootInfiniteBound
+[       OK ] PolynomialTest_Fail.FindRootInfiniteBound (0 ms)
+[----------] 5 tests from PolynomialTest_Fail (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 35 tests from 2 test suites ran. (7 ms total)
+[  PASSED  ] 35 tests.
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"lab02Tests" end time: Oct 19 13:35 MSK
+"lab02Tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 19 13:35 MSK

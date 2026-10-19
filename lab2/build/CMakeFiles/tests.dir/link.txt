@@ -1,0 +1,1 @@
+/usr/bin/g++ -g -fsanitize=address -Wl,--dependency-file=CMakeFiles/tests.dir/link.d CMakeFiles/tests.dir/test/polynomial_test.cpp.o -o tests  liblab02_lib.a lib/libgtest_main.a lib/libgtest.a
