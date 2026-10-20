@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblab02_lib.a CMakeFiles/lab02_lib.dir/src/polynomial.cpp.o
-/usr/bin/ranlib liblab02_lib.a

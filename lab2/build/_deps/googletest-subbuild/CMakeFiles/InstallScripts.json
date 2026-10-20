@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/vagrant/shara/oop_labs/lab2/build/_deps/googletest-subbuild/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
