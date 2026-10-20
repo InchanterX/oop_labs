@@ -1,6 +1,8 @@
 #include "lab02/polynomial.hpp"
 
 #include <cmath>
+#include <cstdint>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -8,50 +10,71 @@
 
 #include <gtest/gtest.h>
 
-static std::string to_str(const Polynomial& p) {
+namespace lab02 {
+namespace {
+
+std::string ToStr(const Polynomial& p) {
     std::ostringstream out;
     p.print(out);
     return out.str();
 }
 
+void ExpectCoefficients(const Polynomial& p, const double* expected, std::int32_t size) {
+    ASSERT_EQ(p.degree(), size - 1);
+    for (std::int32_t power = 0; power < size; ++power) {
+        EXPECT_DOUBLE_EQ(p.coefficient(power), expected[power]) << "power " << power;
+    }
+}
+
 TEST(PolynomialTest, DefaultIsZero) {
     const Polynomial p;
-    EXPECT_EQ(to_str(p), "0");
+    ExpectCoefficients(p, nullptr, 0);
 }
 
 TEST(PolynomialTest, ConstructCommon) {
     const double coeffs[]{1.0, 2.0, 3.0};
     const Polynomial p(coeffs, 2);
-    EXPECT_EQ(to_str(p), "1 + 2x + 3x^2");
+    const double expected[]{1.0, 2.0, 3.0};
+    ExpectCoefficients(p, expected, 3);
 }
 
 TEST(PolynomialTest, ConstructConstant) {
     const double coeffs[]{5.0};
     const Polynomial p(coeffs, 0);
-    EXPECT_EQ(to_str(p), "5");
+    const double expected[]{5.0};
+    ExpectCoefficients(p, expected, 1);
 }
 
 TEST(PolynomialTest, ConstructTrailingZeros) {
     const double coeffs[]{1.0, 0.0, 0.0};
     const Polynomial p(coeffs, 2);
-    EXPECT_EQ(to_str(p), "1");
+    const double expected[]{1.0};
+    ExpectCoefficients(p, expected, 1);
 }
 
 TEST(PolynomialTest, ConstructAllZeros) {
     const double coeffs[]{0.0, 0.0, 0.0};
     const Polynomial p(coeffs, 2);
-    EXPECT_EQ(to_str(p), "0");
+    ExpectCoefficients(p, nullptr, 0);
 }
 
 TEST(PolynomialTest_Fail, ConstructNull) {
     const Polynomial p(nullptr, 3);
-    EXPECT_EQ(to_str(p), "0");
+    ExpectCoefficients(p, nullptr, 0);
 }
 
 TEST(PolynomialTest_Fail, ConstructNegativeDegree) {
     const double coeffs[]{1.0};
     const Polynomial p(coeffs, -5);
-    EXPECT_EQ(to_str(p), "0");
+    ExpectCoefficients(p, nullptr, 0);
+}
+
+TEST(PolynomialTest, CoefficientOutOfRangeIsZero) {
+    const double coeffs[]{1.0, 2.0};
+    const Polynomial p(coeffs, 1);
+    EXPECT_DOUBLE_EQ(p.coefficient(-1), 0.0);
+    EXPECT_DOUBLE_EQ(p.coefficient(2), 0.0);
+    EXPECT_DOUBLE_EQ(Polynomial().coefficient(0), 0.0);
 }
 
 TEST(PolynomialTest, CopyIsDeep) {
@@ -59,22 +82,25 @@ TEST(PolynomialTest, CopyIsDeep) {
     Polynomial a(coeffs, 1);
     Polynomial b(a);
     b.add(a);
-    EXPECT_EQ(to_str(a), "1 + 2x");
-    EXPECT_EQ(to_str(b), "2 + 4x");
+    const double expected_a[]{1.0, 2.0};
+    const double expected_b[]{2.0, 4.0};
+    ExpectCoefficients(a, expected_a, 2);
+    ExpectCoefficients(b, expected_b, 2);
 }
 
 TEST(PolynomialTest, CopyZero) {
     const Polynomial a;
     const Polynomial b(a);
-    EXPECT_EQ(to_str(b), "0");
+    ExpectCoefficients(b, nullptr, 0);
 }
 
 TEST(PolynomialTest, MoveCommon) {
     const double coeffs[]{1.0, 2.0};
     Polynomial a(coeffs, 1);
     const Polynomial b(std::move(a));
-    EXPECT_EQ(to_str(b), "1 + 2x");
-    EXPECT_EQ(to_str(a), "0");
+    const double expected[]{1.0, 2.0};
+    ExpectCoefficients(b, expected, 2);
+    ExpectCoefficients(a, nullptr, 0);
 }
 
 TEST(PolynomialTest, AssignCopy) {
@@ -82,8 +108,9 @@ TEST(PolynomialTest, AssignCopy) {
     const Polynomial a(coeffs, 1);
     Polynomial b;
     b = a;
-    EXPECT_EQ(to_str(b), "1 + 2x");
-    EXPECT_EQ(to_str(a), "1 + 2x");
+    const double expected[]{1.0, 2.0};
+    ExpectCoefficients(b, expected, 2);
+    ExpectCoefficients(a, expected, 2);
 }
 
 TEST(PolynomialTest, AssignMove) {
@@ -91,8 +118,9 @@ TEST(PolynomialTest, AssignMove) {
     Polynomial a(coeffs, 1);
     Polynomial b;
     b = std::move(a);
-    EXPECT_EQ(to_str(b), "1 + 2x");
-    EXPECT_EQ(to_str(a), "0");
+    const double expected[]{1.0, 2.0};
+    ExpectCoefficients(b, expected, 2);
+    ExpectCoefficients(a, nullptr, 0);
 }
 
 TEST(PolynomialTest, AssignSelf) {
@@ -100,7 +128,8 @@ TEST(PolynomialTest, AssignSelf) {
     Polynomial a(coeffs, 1);
     Polynomial& ref = a;
     a = ref;
-    EXPECT_EQ(to_str(a), "1 + 2x");
+    const double expected[]{1.0, 2.0};
+    ExpectCoefficients(a, expected, 2);
 }
 
 TEST(PolynomialTest, AddCommon) {
@@ -109,7 +138,8 @@ TEST(PolynomialTest, AddCommon) {
     Polynomial a(c1, 1);
     const Polynomial b(c2, 2);
     a.add(b);
-    EXPECT_EQ(to_str(a), "1 + 3x + x^2");
+    const double expected[]{1.0, 3.0, 1.0};
+    ExpectCoefficients(a, expected, 3);
 }
 
 TEST(PolynomialTest, AddToZero) {
@@ -117,14 +147,16 @@ TEST(PolynomialTest, AddToZero) {
     const Polynomial a(coeffs, 1);
     Polynomial zero;
     zero.add(a);
-    EXPECT_EQ(to_str(zero), "1 + 2x");
+    const double expected[]{1.0, 2.0};
+    ExpectCoefficients(zero, expected, 2);
 }
 
 TEST(PolynomialTest, AddZero) {
     const double coeffs[]{1.0, 2.0};
     Polynomial a(coeffs, 1);
     a.add(Polynomial());
-    EXPECT_EQ(to_str(a), "1 + 2x");
+    const double expected[]{1.0, 2.0};
+    ExpectCoefficients(a, expected, 2);
 }
 
 TEST(PolynomialTest, AddCancelLeading) {
@@ -132,7 +164,8 @@ TEST(PolynomialTest, AddCancelLeading) {
     const double c2[]{0.0, 0.0, -1.0};
     Polynomial a(c1, 2);
     a.add(Polynomial(c2, 2));
-    EXPECT_EQ(to_str(a), "1");
+    const double expected[]{1.0};
+    ExpectCoefficients(a, expected, 1);
 }
 
 TEST(PolynomialTest, AddCancelAll) {
@@ -140,14 +173,15 @@ TEST(PolynomialTest, AddCancelAll) {
     const double c2[]{-1.0, -2.0};
     Polynomial a(c1, 1);
     a.add(Polynomial(c2, 1));
-    EXPECT_EQ(to_str(a), "0");
+    ExpectCoefficients(a, nullptr, 0);
 }
 
 TEST(PolynomialTest, AddSelf) {
     const double coeffs[]{1.0, 2.0};
     Polynomial a(coeffs, 1);
     a.add(a);
-    EXPECT_EQ(to_str(a), "2 + 4x");
+    const double expected[]{2.0, 4.0};
+    ExpectCoefficients(a, expected, 2);
 }
 
 TEST(PolynomialTest, MulCommon) {
@@ -155,28 +189,30 @@ TEST(PolynomialTest, MulCommon) {
     const double c2[]{0.0, 1.0, 1.0};
     Polynomial a(c1, 1);
     a.mul(Polynomial(c2, 2));
-    EXPECT_EQ(to_str(a), "x + 3x^2 + 2x^3");
+    const double expected[]{0.0, 1.0, 3.0, 2.0};
+    ExpectCoefficients(a, expected, 4);
 }
 
 TEST(PolynomialTest, MulByZero) {
     const double coeffs[]{1.0, 2.0};
     Polynomial a(coeffs, 1);
     a.mul(Polynomial());
-    EXPECT_EQ(to_str(a), "0");
+    ExpectCoefficients(a, nullptr, 0);
 }
 
 TEST(PolynomialTest, MulZero) {
     const double coeffs[]{1.0, 2.0};
     Polynomial zero;
     zero.mul(Polynomial(coeffs, 1));
-    EXPECT_EQ(to_str(zero), "0");
+    ExpectCoefficients(zero, nullptr, 0);
 }
 
 TEST(PolynomialTest, MulSelf) {
     const double coeffs[]{1.0, 1.0};
     Polynomial a(coeffs, 1);
     a.mul(a);
-    EXPECT_EQ(to_str(a), "1 + 2x + x^2");
+    const double expected[]{1.0, 2.0, 1.0};
+    ExpectCoefficients(a, expected, 3);
 }
 
 TEST(PolynomialTest, EvaluateCommon) {
@@ -196,16 +232,27 @@ TEST(PolynomialTest, EvaluateZero) {
     EXPECT_DOUBLE_EQ(p.evaluate(42.0), 0.0);
 }
 
+TEST(PolynomialTest, PrintZero) {
+    const Polynomial p;
+    EXPECT_EQ(ToStr(p), "0");
+}
+
+TEST(PolynomialTest, PrintCommon) {
+    const double coeffs[]{1.0, 2.0, 3.0};
+    const Polynomial p(coeffs, 2);
+    EXPECT_EQ(ToStr(p), "1 + 2x + 3x^2");
+}
+
 TEST(PolynomialTest, PrintNegative) {
     const double coeffs[]{-1.0, 0.0, -1.0};
     const Polynomial p(coeffs, 2);
-    EXPECT_EQ(to_str(p), "-1 - x^2");
+    EXPECT_EQ(ToStr(p), "-1 - x^2");
 }
 
 TEST(PolynomialTest, PrintFractional) {
     const double coeffs[]{0.0, 2.5};
     const Polynomial p(coeffs, 1);
-    EXPECT_EQ(to_str(p), "2.5x");
+    EXPECT_EQ(ToStr(p), "2.5x");
 }
 
 TEST(PolynomialTest, PrintOperator) {
@@ -236,20 +283,29 @@ TEST(PolynomialTest, FindRootAtBound) {
     EXPECT_DOUBLE_EQ(p.find_root(1.0, 3.0), 1.0);
 }
 
-TEST(PolynomialTest_Fail, FindRootSameSigns) {
+TEST(PolynomialTest_Throw, FindRootSameSigns) {
     const double coeffs[]{-2.0, 0.0, 1.0};
     const Polynomial p(coeffs, 2);
     EXPECT_THROW(p.find_root(2.0, 3.0), std::invalid_argument);
 }
 
-TEST(PolynomialTest_Fail, FindRootConstant) {
+TEST(PolynomialTest_Throw, FindRootConstant) {
     const double coeffs[]{5.0};
     const Polynomial p(coeffs, 0);
     EXPECT_THROW(p.find_root(-1.0, 1.0), std::invalid_argument);
 }
 
-TEST(PolynomialTest_Fail, FindRootInfiniteBound) {
+TEST(PolynomialTest_Throw, FindRootInfiniteBound) {
     const double coeffs[]{-2.0, 0.0, 1.0};
     const Polynomial p(coeffs, 2);
-    EXPECT_THROW(p.find_root(0.0, INFINITY), std::invalid_argument);
+    EXPECT_THROW(p.find_root(0.0, std::numeric_limits<double>::infinity()), std::invalid_argument);
 }
+
+TEST(PolynomialTest_Throw, FindRootNanBound) {
+    const double coeffs[]{-2.0, 0.0, 1.0};
+    const Polynomial p(coeffs, 2);
+    EXPECT_THROW(p.find_root(std::numeric_limits<double>::quiet_NaN(), 2.0), std::invalid_argument);
+}
+
+}  // namespace
+}  // namespace lab02
